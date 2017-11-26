@@ -46,13 +46,24 @@ fi
 printf "Activating NAT  "
 iptables -v --table nat --append POSTROUTING --out-interface $OUT_INTERFACE -j MASQUERADE > /dev/null
 post_routing=$?
+if [ $post_routing -ne 0 ]
+then
+	echo -e  "\e[31mError with POSTROUTING chain" 
+	exit 1
+fi
 iptables -v --append FORWARD --in-interface $OUT_INTERFACE --out-interface $IN_INTERFACE -j ACCEPT > /dev/null
 forward1=$?
+if [ $forward1 -ne 0 ]
+then
+	echo -e "\e[31mError with FORWARD chain: forward from $OUT_INTERFACE  to $IN_INTERFACE can not be set"
+	exit 1
+fi
 iptables -v --append FORWARD --in-interface $IN_INTERFACE --out-interface $OUT_INTERFACE -j ACCEPT > /dev/null
 forward2=$?
-if [ $post_routing == 0 ] && [ $forward1 == 0 ] && [ $forward2 == 0 ]
+if [ $forward2 -ne 0 ]
 then
-	echo  -e "\e[32m[ OK ] \e[39m "
+	echo -e "\e[31mError with FORWARD chain: forward from $IN_INTERFACE  to $OUT_INTERFACE can not be set"
+	exit 1
 fi
-
+echo  -e "\e[32m[ OK ] \e[39m "
 exit 0
