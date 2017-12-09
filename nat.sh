@@ -1,6 +1,5 @@
 #!/bin/bash
 
-
 if [ "$EUID" -ne 0 ]
 then 
 	echo "Please run as root"
@@ -65,5 +64,7 @@ then
 	echo -e "\e[31mError with FORWARD chain: forward from $IN_INTERFACE  to $OUT_INTERFACE can not be set"
 	exit 1
 fi
+
 echo  -e "\e[32m[ OK ] \e[39m "
+
 exit 0
